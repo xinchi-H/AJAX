@@ -1,30 +1,37 @@
-myButton.addEventListener('click', (e)=>{
-    let request = new XMLHttpRequest()
-    request.open('GET','/xxx')  //配置request
-    request.send()
-    console.log(request.readyState)  //request.readyState状态码4代表响应已下载完成
-    request.onreadystatechange = ()=>{
-        if(request.readyState === 4){
-          console.log('请求响应都完毕了')
-          console.log(request.status)
-          if(request.status >= 200 && request.status < 300){
-            console.log('说明请求成功')
-            console.log(typeof request.responseText)
-            console.log(request.responseText)
-            let string = request.responseText
-            // 把符合 JSON 语法的字符串
-            // 转换成 JS 对应的值
-            let object = window.JSON.parse(string) 
-            // JSON.parse 是浏览器提供的
-            console.log(typeof object)
-            console.log(object)
-            console.log('object.note')
-            console.log(object.note)
-    
-          }else if(request.status >= 400){
-            console.log('说明请求失败') 
-          }
-    
-        }
+window.jQuery = function(nodeOrSelector){
+  let nodes = {}
+  nodes.addClass = function(){}
+  nodes.html = function(){}
+  return nodes
+}
+
+window.jQuery.ajax = function ({ url, method, body, success, fail }) {
+  let request = new XMLHttpRequest()
+  request.open(method, url)  //配置request
+  request.onreadystatechange = () => {
+    if (request.readyState === 4) {
+      console.log('请求响应都完毕了')
+      if (request.status >= 200 && request.status < 300) {
+        console.log('说明请求成功')
+        success.call(undefined, request.responseText)
+      } else if (request.status >= 400) {
+        console.log('说明请求失败')
+        fail.call(undefined, request)
       }
-    })
+    }
+  }
+  request.send(body)
+}
+
+myButton.addEventListener('click', (e) => {
+  window.jQuery.ajax({
+    url: '/xxx',
+    method: 'get',
+    success: (x) => {
+      console.log(x)
+    },
+    fail: (x) => {
+      console.log(x)
+    }
+  })
+})
